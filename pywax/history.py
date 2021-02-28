@@ -2,7 +2,6 @@ import requests
 import json
 import sys
 import inspect
-from datetime import datetime, timedelta
 
 
 class apiVersionException(Exception):
