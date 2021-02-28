@@ -3,20 +3,14 @@ import json
 import sys
 import inspect
 
+from common import get_resp, build_query
+
 
 class apiVersionException(Exception):
     pass
 
 
 class invalidMethod(Exception):
-    pass
-
-
-class apiException(Exception):
-    pass
-
-
-class emptyQuery(Exception):
     pass
 
 
@@ -37,29 +31,6 @@ class History:
         self.server = server
         self.url_base = f"https://{self.server}/{self.api_version}/history"
 
-    def __get(self, url: str) -> requests.models.Response:
-        resp = requests.get(url)
-        resp.raise_for_status()
-        if resp.json().get("error"):
-            raise apiException(resp.json().get("error"))
-        if resp.json().get("total").get("value") < 1:
-            raise emptyQuery("No results found for query")
-        return resp
-
-    def __build_query(self, args: dict) -> str:
-        # Remove non-query related args
-        args.pop("endpoint")
-        args.pop("url")
-        args.pop("self")
-        query = None
-        for arg in args:
-            if args.get(arg) is not None:
-                if query is None:
-                    query = f"{arg}={args.get(arg)}"
-                else:
-                    query = f"&{arg}={args.get(arg)}"
-        return query
-
     def get_abi_snapshot(
         self,
         contract: str,
@@ -72,7 +43,7 @@ class History:
             url += f"&block={int(block)}"
         if limit is not None:
             self.limit = limit
-        return self.__get(url)
+        return get_resp(url)
 
     def get_actions(
         self,
@@ -91,11 +62,11 @@ class History:
         endpoint = inspect.currentframe().f_code.co_name
         url = f"{self.url_base}/{endpoint}"
         args = locals()
-        query = self.__build_query(args)
+        query = build_query(args)
         if query is None:
             raise Exception("Must provide at least one query parameter")
 
-        return self.__get(f"{url}?{query}")
+        return get_resp(f"{url}?{query}")
 
     def get_deltas(
         self,
@@ -109,11 +80,11 @@ class History:
         endpoint = inspect.currentframe().f_code.co_name
         url = f"{self.url_base}/{endpoint}"
         args = locals()
-        query = self.__build_query(args)
+        query = build_query(args)
         if query is None:
             raise Exception("Must provide at least one query parameter")
 
-        return self.__get(f"{url}?{query}")
+        return get_resp(f"{url}?{query}")
 
     def get_schedule(
         self,
@@ -126,20 +97,20 @@ class History:
         endpoint = inspect.currentframe().f_code.co_name
         url = f"{self.url_base}/{endpoint}"
         args = locals()
-        query = self.__build_query(args)
+        query = build_query(args)
         if query is None:
             raise Exception("Must provide at least one query parameter")
 
-        return self.__get(f"{url}?{query}")
+        return get_resp(f"{url}?{query}")
 
     def get_transaction(self, id: str):
         endpoint = inspect.currentframe().f_code.co_name
         url = f"{self.url_base}/{endpoint}"
         args = locals()
-        query = self.__build_query(args)
+        query = build_query(args)
         if query is None:
             raise Exception("Must provide at least one query parameter")
 
-        return self.__get(f"{url}?{query}")
+        return get_resp(f"{url}?{query}")
 
     # def get_block(self):
