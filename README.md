@@ -1,5 +1,6 @@
 # PyWAX
 Python WAX Blockchain Library
+
 API Documentation: https://wax.eosphere.io/v2/docs
 
 # Current Project Status
