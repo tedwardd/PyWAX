@@ -9,7 +9,7 @@ class emptyQuery(Exception):
     pass
 
 
-def get_resp(self, url: str) -> requests.models.Response:
+def get_resp(url: str) -> requests.models.Response:
     resp = requests.get(url)
     resp.raise_for_status()
     if resp.json().get("error"):
@@ -19,7 +19,7 @@ def get_resp(self, url: str) -> requests.models.Response:
     return resp
 
 
-def build_query(self, args: dict) -> str:
+def build_query(args: dict) -> str:
     # Remove non-query related args
     args.pop("endpoint")
     args.pop("url")
